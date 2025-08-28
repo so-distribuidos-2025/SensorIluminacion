@@ -43,8 +43,16 @@ public class HiloSensor {
     public void run(){
         /*en este while medimos la iluminacion*/
         while(on/*o while(on)*/){
-            this.iluminacion = generarHumedad();
-            System.out.println("Humedad: " + leerHumedad());
+            /*this.iluminacion = generarHumedad();
+            System.out.println("Humedad: " + leerHumedad());*/
+             try {
+                //System.out.println("Iluminación: " + leerHumedad());
+                this.iluminacion = generarHumedad();
+                pw.println(iluminacion);
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                System.getLogger(HiloSensor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
             
            
         }
