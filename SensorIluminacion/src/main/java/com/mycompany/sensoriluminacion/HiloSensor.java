@@ -4,18 +4,25 @@
  */
 package com.mycompany.sensoriluminacion;
 
+import java.io.PrintWriter;
+import java.net.Socket;
+
 /**
  *
  * @author Anita
  */
-public class HiloSensor {
+public class HiloSensor extends Thread{
     
     private boolean on;
-    private float iluminacion;
+    private double iluminacion;
+    private PrintWriter pw;
+    private Socket s;
 
-    public HiloSensor(boolean on, float humedad) {
+    public HiloSensor(Socket s, PrintWriter pw) {
         this.on = on;
-        this.iluminacion = humedad;
+        this.iluminacion = 0.0;
+        this.pw = pw;
+        this.s = s;
     }
     
     public HiloSensor() {
@@ -24,8 +31,8 @@ public class HiloSensor {
     }
     
     
-    public float generarHumedad(){
-    return ((float) Math.random()*100);
+    public double generarHumedad(){
+    return ((double) Math.random()*100);
     }
     
     public void encender(){
@@ -36,7 +43,7 @@ public class HiloSensor {
         on = false;
     }
     
-    public float leerHumedad(){
+    public double leerHumedad(){
     return iluminacion;
     }
     
@@ -49,7 +56,7 @@ public class HiloSensor {
                 //System.out.println("Iluminación: " + leerHumedad());
                 this.iluminacion = generarHumedad();
                 pw.println(iluminacion);
-                sleep(1000);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 System.getLogger(HiloSensor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
