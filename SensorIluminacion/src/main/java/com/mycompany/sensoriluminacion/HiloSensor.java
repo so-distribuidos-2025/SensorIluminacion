@@ -1,6 +1,12 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Clase HiloSensor
+ * ----------------
+ * Representa el hilo que simula un sensor de iluminación.
+ *
+ * Funcionalidades principales:
+ *  - Genera valores aleatorios de iluminación en un rango de 0 a 100.
+ *  - Envía periódicamente los valores generados al servidor mediante un PrintWriter.
+ *  - Permite encender y apagar el sensado de forma controlada.
  */
 package com.mycompany.sensoriluminacion;
 
@@ -8,61 +14,99 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- *
+ * Hilo que simula un sensor de iluminación.
+ * Cada segundo genera un valor aleatorio de iluminación y lo envía al servidor.
+ * 
+ * El hilo puede iniciarse y detenerse usando los métodos {@link #encender()} y {@link #apagar()}.
+ * 
  * @author Anita
  */
-public class HiloSensor extends Thread{
-    
+public class HiloSensor extends Thread {
+
+    /** Estado del sensor (true = encendido, false = apagado). */
     private boolean on;
+
+    /** Valor actual de la iluminación medida (0 - 100). */
     private double iluminacion;
+
+    /** Canal de salida para enviar datos al servidor. */
     private PrintWriter pw;
+
+    /** Conexión con el servidor. */
     private Socket s;
 
+    /**
+     * Constructor principal.
+     *
+     * @param s  el socket de conexión con el servidor
+     * @param pw flujo de salida para enviar lecturas de iluminación
+     */
     public HiloSensor(Socket s, PrintWriter pw) {
-        this.on = on;
+        this.on = true;              // El sensor arranca encendido
         this.iluminacion = 0.0;
         this.pw = pw;
         this.s = s;
     }
-    
+
+    /**
+     * Constructor por defecto (sin conexión establecida).
+     * Inicia el sensor encendido con iluminación inicial 0.
+     */
     public HiloSensor() {
         this.on = true;
         this.iluminacion = 0;
     }
-    
-    
-    public double generarHumedad(){
-    return ((double) Math.random()*100);
+
+    /**
+     * Genera un valor aleatorio de iluminación entre 0 y 100.
+     *
+     * @return valor generado de iluminación
+     */
+    public double generarIluminacion() {
+        return Math.random() * 100;
     }
-    
-    public void encender(){
+
+    /**
+     * Enciende el sensor (habilita el bucle de sensado).
+     */
+    public void encender() {
         on = true;
     }
-    
-    public void apagar(){
+
+    /**
+     * Apaga el sensor (finaliza el bucle de sensado).
+     */
+    public void apagar() {
         on = false;
     }
-    
-    public double leerHumedad(){
-    return iluminacion;
+
+    /**
+     * Devuelve la última lectura registrada de iluminación.
+     *
+     * @return valor actual de iluminación
+     */
+    public double leerIluminacion() {
+        return iluminacion;
     }
-    
-    public void run(){
-        /*en este while medimos la iluminacion*/
-        while(on/*o while(on)*/){
-            /*this.iluminacion = generarHumedad();
-            System.out.println("Humedad: " + leerHumedad());*/
-             try {
-                //System.out.println("Iluminación: " + leerHumedad());
-                this.iluminacion = generarHumedad();
+
+    /**
+     * Lógica principal del hilo.
+     * Mientras el sensor esté encendido:
+     *  - Genera un nuevo valor de iluminación.
+     *  - Envía el valor al servidor.
+     *  - Espera 1 segundo antes de la siguiente lectura.
+     */
+    @Override
+    public void run() {
+        while (on) {
+            try {
+                this.iluminacion = generarIluminacion();
                 pw.println(iluminacion);
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                System.getLogger(HiloSensor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                System.getLogger(HiloSensor.class.getName())
+                      .log(System.Logger.Level.ERROR, (String) null, ex);
             }
-            
-           
         }
     }
-    
 }
