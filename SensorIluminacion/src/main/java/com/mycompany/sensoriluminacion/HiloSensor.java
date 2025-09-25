@@ -12,6 +12,8 @@ package com.mycompany.sensoriluminacion;
 
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Hilo que simula un sensor de iluminación.
@@ -101,6 +103,7 @@ public class HiloSensor extends Thread {
         while (on) {
             try {
                 this.iluminacion = generarIluminacion();
+                System.out.println(getTiempo() + " | Iluminacion: " +iluminacion);
                 pw.println(iluminacion);
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
@@ -108,5 +111,11 @@ public class HiloSensor extends Thread {
                       .log(System.Logger.Level.ERROR, (String) null, ex);
             }
         }
+    }
+
+    private String getTiempo(){
+        LocalDateTime myDateObj = LocalDateTime.now();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
+        return myDateObj.format(myFormatObj);
     }
 }
